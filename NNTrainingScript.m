@@ -12,13 +12,23 @@ trainPct = .80;
 valPct = .10;
 testPct = 1-valPct-trainPct;
 
-disp('Standard Deviation of all sin(x):');
-disp(std(targets));
-disp('Mean of all sin(x)');
-disp(mean(targets));
-disp('Rsquared for sin(x)');
+
+fprintf(fopen('C:\Users\dania\Documents\MATLAB\NumericalFigures.txt', 'w'), '%s\n', 'Neural Network Data for Run on: ', date);
+fclose('all');
+%find the ID for the file specified and with an append permission
+fileID = fopen('C:\Users\dania\Documents\MATLAB\NumericalFigures.txt', 'a');
+
+%Writes to file all the data for sin(x) to a file
+%%disp(std(targets));
+fprintf(fileID, '%s\n', 'Standard Deviation of all sin(x): ', std(targets));
+%Writes the Mean of sin(x)
+fprintf(fileID, '%s\n', 'Mean of all sin(x): ', mean(targets));
+%Writes the R^2 value
 mdl = fitlm(inputs, targets);
-disp(mdl.Rsquared.Ordinary);
+fprintf(fileID, '%s\n', 'Rsquared for sin(x): ', mdl.Rsquared.Ordinary);
+%Writes the Std Dev of sin(x)
+fprintf(fileID, '%s\n', 'Standard Deviation of all sin(x): ', std(targets));
+fclose('all');
 %Values Histogram
 DispHistogram(targets, 50, 'Histogram of all sin(x) values', 'Value', 'Occurence');
 
@@ -64,52 +74,55 @@ for j=0:2
         RMSESum = RMSESum + RMSE;
     end
 
+    %get a new File ID
+    fileID = fopen('C:\Users\dania\Documents\MATLAB\NumericalFigures.txt', 'a');
+    
     %Display which run this is
-    disp('--------------------------------------');
-    fprintf('Data for training Percentage of %d%%:\n', trainPct*100);
+    fprintf(fileID, '%s\n', '--------------------------------------');
+    fprintf(fileID, '%s\n', sprintf('Data for training Percentage of %d%%:\n', trainPct*100));
     
     %Display Numerical Results
     %Mean RMSE
-    disp('RMSE average: ');
     avgRMSE = RMSESum/numRuns;
-    disp(avgRMSE);
+    fprintf(fileID, '%s\n', 'RMSE average: ', avgRMSE);
+    %%%%disp(avgRMSE);
     %RMSE Standard Deviation
-    disp('RMSE Std. Dev:');
     RMSEdev = std(allRMSE);
-    disp(RMSEdev);
+    fprintf(fileID, '%s\n', 'RMSE Std. Dev: ', RMSEdev);
+    %%%%disp(RMSEdev);
     %Smallest RMSE
-    disp('Smallest RMSE:');
-    disp(minRMSE);
+    fprintf(fileID, '%s\n', 'Smallest RMSE: ', minRMSE);
+    %%%%disp(minRMSE);
     %Smallest R^2
-    disp('Smallest R^2:');
     mdl2 = fitlm(minRMSEPred, minRMSETargets);
-    disp(mdl2.Rsquared.Ordinary);
+    fprintf(fileID, '%s\n', 'Smallest R^2: ', mdl2.Rsquared.Ordinary);
+    %%%%disp(mdl2.Rsquared.Ordinary);
     %Largest RMSE
-    disp('Largest RMSE');
-    disp(maxRMSE);
+    fprintf(fileID, '%s\n', 'Largest RMSE: ', minRMSE);
+    %%%%disp(maxRMSE);
     %Largest R^2
-    disp('Largest R^2:');
     mdl3 = fitlm(maxRMSEPred, maxRMSETargets);
-    disp(mdl3.Rsquared.Ordinary);
+    %%%%disp(mdl3.Rsquared.Ordinary);
+    fprintf(fileID, '%s\n', 'Largest R^2: ', mdl3.Rsquared.Ordinary);
 
     %Mean of Predicted Outputs
     avgOutput = mean(allOutputs);
-    disp('Mean Y-value:');
-    disp(avgOutput);
+    fprintf(fileID, '%s\n', 'Mean Y-value: ', avgOutput);
+    %%%%disp(avgOutput);
     %All Predicted Outputs Standard Deviation
     Dev = std(allOutputs);
-    disp('Std Dev. of Outputs:');
-    disp(Dev);
+    fprintf(fileID, '%s\n', 'Std Dev. of Outputs: ', Dev);
+    %%%%disp(Dev);
 
     %Graphs
     %RMSE Histogram
-    DispHistogram(allRMSE, numBins, sprintf('RMSE Histogram [%.2g%%]', trainPct*100), 'RMSE', 'Occurence');
+    DispHistogram(allRMSE, numBins, sprintf('RMSE Histogram [%.2g%%]', testPct*100), 'RMSE', 'Occurence');
     %Data Scatterplot
     %DispScatter(allOutputs ,allTestTargets, sprintf('Predicted vs. Actual RMSE(%d)[%.2g%%]', avgRMSE, trainPct*100), 'Predicted sin(x)', 'sin(x)');
     %Max RMSE Scatterplot
-    DispScatter(maxRMSEPred, maxRMSETargets, maxRMSETO, maxRMSETT, sprintf('Predicted vs. Actual with Largest RMSE(%d)[%.2g%%]', maxRMSE, trainPct*100), 'Predicted sin(x)', 'sin(x)');
+    DispScatter(maxRMSEPred, maxRMSETargets, maxRMSETO, maxRMSETT, sprintf('Predicted vs. Actual with Largest RMSE(%d)[%.2g%%]', maxRMSE, testPct*100), 'Predicted sin(x)', 'sin(x)');
     %Min RMSE Scatterplot
-    DispScatter(minRMSEPred, minRMSETargets, minRMSETO, minRMSETT, sprintf('Predicted vs Actual with Smallest RMSE(%d)[%.2g%%]', minRMSE, trainPct*100), 'Predicted sin(x)', 'sin(x)');
+    DispScatter(minRMSEPred, minRMSETargets, minRMSETO, minRMSETT, sprintf('Predicted vs Actual with Smallest RMSE(%d)[%.2g%%]', minRMSE, testPct*100), 'Predicted sin(x)', 'sin(x)');
     
     switch (num)
         case 0
@@ -121,4 +134,5 @@ for j=0:2
     end
     
     testPct = 1-valPct-trainPct;
+    fclose('all');
 end
