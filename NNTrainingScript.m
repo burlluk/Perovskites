@@ -111,8 +111,18 @@ for j=0:2
     %%%%disp(avgOutput);
     %All Predicted Outputs Standard Deviation
     Dev = std(allOutputs);
+
     fprintf(fileID, '%s\n', 'Std Dev. of Outputs: ', Dev);
-    %%%%disp(Dev);
+    %%%%disp(Dev)
+    
+    %Normalized data
+    minNormal= (minRMSE-avgRMSE)/Dev;
+    disp('Normalized Smallest RMSE');
+    disp(minNormal);
+
+    maxNormal= (maxRMSE-avgRMSE)/Dev;
+    disp('Normalized Largest RMSE');
+    disp(maxNormal);
 
     %Graphs
     %RMSE Histogram
@@ -136,3 +146,4 @@ for j=0:2
     testPct = 1-valPct-trainPct;
     fclose('all');
 end
+
