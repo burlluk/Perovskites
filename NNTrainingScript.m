@@ -131,4 +131,4 @@ disp(maxNormal);
     
     testPct = 1-valPct-trainPct;
 end
-%heyyyyyyyy
+
