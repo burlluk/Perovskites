@@ -100,6 +100,15 @@ for j=0:2
     Dev = std(allOutputs);
     disp('Std Dev. of Outputs:');
     disp(Dev);
+    
+    %Normalized data
+minNormal= (minRMSE-avgRMSE)/Dev;
+disp('Normalized Smallest RMSE');
+disp(minNormal);
+
+maxNormal= (maxRMSE-avgRMSE)/Dev;
+disp('Normalized Largest RMSE');
+disp(maxNormal);
 
     %Graphs
     %RMSE Histogram
