@@ -19,6 +19,8 @@ function [] = DispScatter(xOValues, yOValues, xTValues, yTValues, gTitle, xAxisL
     xlabel(xAxisLabel);
     ylabel(yAxisLabel);
     legend('Test', 'Training', 'Desired Fit', 'Line of Best Fit', 'Location', 'northwest');
-    saveas(gcf, [fullfile('C:\Users\dania\Documents\MATLAB\Figures', gTitle), '.pdf']);
+    directory = pwd;
+    %saveas(gcf, [fullfile('C:\Users\dania\Documents\MATLAB\Figures', gTitle), '.pdf']);
+    saveas(gcf, [fullfile([directory, '\Figures'], gTitle), '.pdf']);
 end
 
