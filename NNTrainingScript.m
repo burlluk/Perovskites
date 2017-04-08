@@ -12,14 +12,14 @@ trainPct = .80;
 valPct = .10;
 testPct = 1-valPct-trainPct;
 
-
-fprintf(fopen('C:\Users\dania\Documents\MATLAB\NumericalFigures.txt', 'w'), '%s\n', 'Neural Network Data for Run on: ', date);
+%Finds the current folder directory to be used in saving the documents
+directory = pwd;
+fprintf(fopen([directory, '\NumericalFigures.txt'], 'w'), '%s\n', 'Neural Network Data for Run on: ', date);
 fclose('all');
 %find the ID for the file specified and with an append permission
-fileID = fopen('C:\Users\dania\Documents\MATLAB\NumericalFigures.txt', 'a');
+fileID = fopen(fopen([directory, '\NumericalFigures.txt'], 'a'));
 
 %Writes to file all the data for sin(x) to a file
-%%disp(std(targets));
 fprintf(fileID, '%s\n', 'Standard Deviation of all sin(x): ', std(targets));
 %Writes the Mean of sin(x)
 fprintf(fileID, '%s\n', 'Mean of all sin(x): ', mean(targets));
@@ -75,7 +75,7 @@ for j=0:2
     end
 
     %get a new File ID
-    fileID = fopen('C:\Users\dania\Documents\MATLAB\NumericalFigures.txt', 'a');
+    fileID = fopen([directory, '\NumericalFigures.txt'], 'a');
     
     %Display which run this is
     fprintf(fileID, '%s\n', '--------------------------------------');
@@ -85,35 +85,27 @@ for j=0:2
     %Mean RMSE
     avgRMSE = RMSESum/numRuns;
     fprintf(fileID, '%s\n', 'RMSE average: ', avgRMSE);
-    %%%%disp(avgRMSE);
     %RMSE Standard Deviation
     RMSEdev = std(allRMSE);
     fprintf(fileID, '%s\n', 'RMSE Std. Dev: ', RMSEdev);
-    %%%%disp(RMSEdev);
     %Smallest RMSE
     fprintf(fileID, '%s\n', 'Smallest RMSE: ', minRMSE);
-    %%%%disp(minRMSE);
     %Smallest R^2
     mdl2 = fitlm(minRMSEPred, minRMSETargets);
     fprintf(fileID, '%s\n', 'Smallest R^2: ', mdl2.Rsquared.Ordinary);
-    %%%%disp(mdl2.Rsquared.Ordinary);
     %Largest RMSE
     fprintf(fileID, '%s\n', 'Largest RMSE: ', minRMSE);
-    %%%%disp(maxRMSE);
     %Largest R^2
     mdl3 = fitlm(maxRMSEPred, maxRMSETargets);
-    %%%%disp(mdl3.Rsquared.Ordinary);
     fprintf(fileID, '%s\n', 'Largest R^2: ', mdl3.Rsquared.Ordinary);
 
     %Mean of Predicted Outputs
     avgOutput = mean(allOutputs);
     fprintf(fileID, '%s\n', 'Mean Y-value: ', avgOutput);
-    %%%%disp(avgOutput);
     %All Predicted Outputs Standard Deviation
     Dev = std(allOutputs);
 
     fprintf(fileID, '%s\n', 'Std Dev. of Outputs: ', Dev);
-    %%%%disp(Dev)
     
     %Normalized data
     minNormal= (minRMSE-avgRMSE)/Dev;
