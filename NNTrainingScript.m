@@ -2,7 +2,7 @@ inputs = (0:pi/64:2*pi);
 targets = sin(inputs);
 allRMSE = zeros(0, 5000);
 allTestTargets = zeros(0, 10000);
-allOutputs = zeros(0, 10000);
+PredOutputs = zeros(0, 10000);
 double RMSE;
 numRuns = 10;
 numBins = 30;
@@ -61,9 +61,9 @@ for j=0:3
         testOutputs = outputs(tr.testInd);
         %Adding exception for the full fit
         if (num == 0)
-            allOutputs = [allOutputs, outputs];
+            PredOutputs = [PredOutputs, outputs];
         else
-            allOutputs = [allOutputs, testOutputs];
+            PredOutputs = [PredOutputs, testOutputs];
         end
         testedTargets = normalTars(tr.testInd);
         %allTestTargets = [allTestTargets, testedTargets];
@@ -131,10 +131,10 @@ for j=0:3
     end
 
     %Mean of Predicted Outputs
-    avgOutput = mean(allOutputs);
+    avgOutput = mean(PredOutputs);
     fprintf(fileID, '%s\n', 'Mean Y-value: ', avgOutput);
     %All Predicted Outputs Standard Deviation
-    Dev = std(allOutputs);
+    Dev = std(PredOutputs);
     fprintf(fileID, '%s\n', 'Std Dev. of Outputs: ', Dev);
     
     %Graphs
