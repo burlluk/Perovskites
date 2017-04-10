@@ -1,13 +1,13 @@
-numInputs = 1;
-%inputs = {(0:pi/64:6.28); (0:pi/63.5:2*pi)};
-inputs = (0:pi/64:2*pi);
-%targets = sin(inputs{1})+2*sin(inputs{2});
-targets = sin(inputs);
+numInputs = 2;
+inputs = {(0:pi/64:6.28); (0:pi/63.5:2*pi)};
+%inputs = (0:pi/64:2*pi);
+targets = sin(inputs{1})+2*sin(inputs{2});
+%targets = sin(inputs);
 allRMSE = zeros(0, 5000);
 allTestTargets = zeros(0, 10000);
 PredOutputs = zeros(0, 10000);
 double RMSE;
-numRuns = 100;
+numRuns = 10;
 numBins = 30;
 num = 0;
 trainPct = 1;
@@ -26,7 +26,7 @@ fprintf(fileID, '%s\n', 'Standard Deviation of all sin(x): ', std(targets));
 %Writes the Mean of sin(x)
 fprintf(fileID, '%s\n', 'Mean of all sin(x): ', mean(targets));
 %Writes the R^2 value
-mdl = fitlm(inputs, targets);
+%mdl = fitlm(inputs, targets);
 %fprintf(fileID, '%s\n', 'Rsquared for sin(x): ', mdl.Rsquared.Adjusted);
 fprintf(fileID, '%s\n', 'Rsquared for sin(x): ', mdl.Rsquared.Ordinary);
 %Writes the Std Dev of sin(x)
@@ -36,17 +36,11 @@ fclose('all');
 DispHistogram(targets, 50, 'Histogram of all sin(x) values', 'Value', 'Occurence');
 
 %Normalized data
-normalTars= (targets-mean(inputs))/std(inputs);
+normalTars= (targets-mean(targets))/std(targets);
 %disp('Normalized Targets');
 
-%normalIns= {(inputs{1}-mean(inputs{1}))/std(inputs{1}); (inputs{2}-mean(inputs{2}))/std(inputs{2})};
-normalIns= (inputs-mean(inputs))/std(inputs);
+normalIns= {(inputs{1}-mean(targets))/std(targets); (inputs{2}-mean(targets))/std(targets)};
 %disp('Normalized Inputs');
-
-%%maxNormal= (maxRMSE-avgRMSE)/Dev;
-%%disp('Normalized Largest RMSE');
-%%disp(maxNormal);
-
 
 for j=0:3
     minRMSE = 1;
@@ -63,21 +57,19 @@ for j=0:3
         [network, tr] = train(network, normalIns, normalTars);
         
         outputs = network(normalIns);
+        %Converting from cell to matrix
+        outputs = cell2mat(outputs);
         %De-normalization of data
-        outputs = (outputs*std(inputs)+mean(inputs));
+        outputs = (outputs*std(targets)+mean(targets));
+        targets = (normalTars*std(targets)+mean(targets));
+        
         %Adding exception for the full fit
         if (num == 0)
             PredOutputs = [PredOutputs, outputs];
         else
             PredOutputs = [PredOutputs, outputs(tr.testInd)];
         end
-        %allTestTargets = [allTestTargets, testedTargets];
-        %{
-        testOutputs = (testOutputs*std(inputs)+mean(inputs));
-        testedTargets = (testedTargets*std(inputs)+mean(inputs));
-        PredOutputs = (PredOutputs*std(inputs)+mean(inputs));
-        %}
-        %errors = outputs-normalTars;
+        
         errors = outputs-targets;
         RMSE = sqrt(mean((errors).^2));
 
@@ -127,12 +119,10 @@ for j=0:3
     if (num ~= 0)
     %Smallest R^2
     mdl2 = fitlm(minRMSEPred, minRMSETargets);
-    %fprintf(fileID, '%s\n', 'Smallest R^2: ', mdl2.Rsquared.Adjusted);
-    fprintf(fileID, '%s\n', 'Smallest R^2: ', mdl2.Rsquared.Ordinary);
+    fprintf(fileID, '%s\n', 'Smallest R^2: ', mdl2.Rsquared.Adjusted);
     %Largest R^2
     mdl3 = fitlm(maxRMSEPred, maxRMSETargets);
-    %fprintf(fileID, '%s\n', 'Largest R^2: ', mdl3.Rsquared.Adjusted);
-    fprintf(fileID, '%s\n', 'Largest R^2: ', mdl3.Rsquared.Ordinary);
+    fprintf(fileID, '%s\n', 'Largest R^2: ', mdl3.Rsquared.Adjusted);
     end
 
     %Mean of Predicted Outputs
