@@ -5,21 +5,20 @@ allTestTargets = zeros(0, 10000);
 allOutputs = zeros(0, 10000);
 double RMSE;
 numRuns = 10;
-RMSESum = 0;
 numBins = 30;
 num = 0;
-trainPct = .80;
-valPct = .10;
-testPct = 1-valPct-trainPct;
+trainPct = 1;
+valPct = 0;
+testPct = 0;
 
 %Finds the current folder directory to be used in saving the documents
 directory = pwd;
 fprintf(fopen([directory, '\NumericalFigures.txt'], 'w'), '%s\n', 'Neural Network Data for Run on: ', date);
 fclose('all');
 %find the ID for the file specified and with an append permission
-fileID = fopen(fopen([directory, '\NumericalFigures.txt'], 'a'));
+fileID = fopen([directory, '\NumericalFigures.txt'], 'a');
 
-%Writes to file all the data for sin(x) to a file
+%Writes to file all the data for sin(x)
 fprintf(fileID, '%s\n', 'Standard Deviation of all sin(x): ', std(targets));
 %Writes the Mean of sin(x)
 fprintf(fileID, '%s\n', 'Mean of all sin(x): ', mean(targets));
@@ -32,25 +31,50 @@ fclose('all');
 %Values Histogram
 DispHistogram(targets, 50, 'Histogram of all sin(x) values', 'Value', 'Occurence');
 
-for j=0:2
+%Normalized data
+normalTars= (targets-mean(targets))/std(targets);
+%disp('Normalized Targets');
+
+normalIns= (inputs-mean(inputs))/std(inputs);
+%disp('Normalized Inputs');
+
+%%maxNormal= (maxRMSE-avgRMSE)/Dev;
+%%disp('Normalized Largest RMSE');
+%%disp(maxNormal);
+
+
+for j=0:3
     minRMSE = 1;
     maxRMSE = 0;
+    RMSESum = 0;
     for i=0:numRuns-1
         %Calls function to set parameters as desired
         network = netParams(trainPct, testPct, valPct, 10);
 
         %Hides the NNtraintool window for "faster" training
-        %net20.trainParam.showWindow = false;
+        network.trainParam.showWindow = false;
 
         %Training the network with those set parameters
-        [network, tr] = train(network, inputs, targets);
+        [network, tr] = train(network, normalIns, normalTars);
 
-        outputs = network(inputs);
+        outputs = network(normalIns);
         testOutputs = outputs(tr.testInd);
-        allOutputs = [allOutputs, testOutputs];
-        testedTargets = targets(tr.testInd);
+        %Adding exception for the full fit
+        if (num == 0)
+            allOutputs = [allOutputs, outputs];
+        else
+            allOutputs = [allOutputs, testOutputs];
+        end
+        testedTargets = normalTars(tr.testInd);
         %allTestTargets = [allTestTargets, testedTargets];
-        errors = testOutputs-testedTargets;
+        %{
+        %De-normalization of data
+        outputs = (outputs*std(inputs)+mean(inputs));
+        testOutputs = (testOutputs*std(inputs)+mean(inputs));
+        testedTargets = (testedTargets*std(inputs)+mean(inputs));
+        allOutputs = (allOutputs*std(inputs)+mean(inputs));
+        %}
+        errors = outputs-normalTars;
 
         RMSE = sqrt(mean((errors).^2));
 
@@ -59,7 +83,7 @@ for j=0:2
             minRMSEPred = testOutputs;
             minRMSETargets = testedTargets;
             minRMSETO = outputs(tr.trainInd);
-            minRMSETT = targets(tr.trainInd);
+            minRMSETT = normalTars(tr.trainInd);
         end
 
         if (RMSE>maxRMSE)
@@ -67,7 +91,7 @@ for j=0:2
             maxRMSEPred = testOutputs;
             maxRMSETargets = testedTargets;
             maxRMSETO = outputs(tr.trainInd);
-            maxRMSETT = targets(tr.trainInd);
+            maxRMSETT = normalTars(tr.trainInd);
         end
 
         allRMSE(i+1) = RMSE;
@@ -78,44 +102,41 @@ for j=0:2
     fileID = fopen([directory, '\NumericalFigures.txt'], 'a');
     
     %Display which run this is
-    fprintf(fileID, '%s\n', '--------------------------------------');
+    fprintf(fileID, '%s\n\n', '--------------------------------------');
     fprintf(fileID, '%s\n', sprintf('Data for training Percentage of %d%%:\n', trainPct*100));
     
     %Display Numerical Results
     %Mean RMSE
     avgRMSE = RMSESum/numRuns;
     fprintf(fileID, '%s\n', 'RMSE average: ', avgRMSE);
+    fprintf(fileID, '%s\n', 'Averaged Over: ');
+    fprintf(fileID, '%d', numRuns);
+    fprintf(fileID, '%s\n', ' runs');
     %RMSE Standard Deviation
     RMSEdev = std(allRMSE);
     fprintf(fileID, '%s\n', 'RMSE Std. Dev: ', RMSEdev);
     %Smallest RMSE
     fprintf(fileID, '%s\n', 'Smallest RMSE: ', minRMSE);
+    %Largest RMSE
+    fprintf(fileID, '%s\n', 'Largest RMSE: ', minRMSE);
+    %Add an exception to R^2 calculation because we cant fit a model
+    %without targets
+    if (num ~= 0)
     %Smallest R^2
     mdl2 = fitlm(minRMSEPred, minRMSETargets);
     fprintf(fileID, '%s\n', 'Smallest R^2: ', mdl2.Rsquared.Ordinary);
-    %Largest RMSE
-    fprintf(fileID, '%s\n', 'Largest RMSE: ', minRMSE);
     %Largest R^2
     mdl3 = fitlm(maxRMSEPred, maxRMSETargets);
     fprintf(fileID, '%s\n', 'Largest R^2: ', mdl3.Rsquared.Ordinary);
+    end
 
     %Mean of Predicted Outputs
     avgOutput = mean(allOutputs);
     fprintf(fileID, '%s\n', 'Mean Y-value: ', avgOutput);
     %All Predicted Outputs Standard Deviation
     Dev = std(allOutputs);
-
     fprintf(fileID, '%s\n', 'Std Dev. of Outputs: ', Dev);
     
-    %Normalized data
-    minNormal= (minRMSE-avgRMSE)/Dev;
-    disp('Normalized Smallest RMSE');
-    disp(minNormal);
-
-    maxNormal= (maxRMSE-avgRMSE)/Dev;
-    disp('Normalized Largest RMSE');
-    disp(maxNormal);
-
     %Graphs
     %RMSE Histogram
     DispHistogram(allRMSE, numBins, sprintf('RMSE Histogram [%.2g%%]', testPct*100), 'RMSE', 'Occurence');
@@ -128,14 +149,17 @@ for j=0:2
     
     switch (num)
         case 0
-            trainPct = .20;
+            trainPct = .75;
+            valPct = .05;
             num = 1;
         case 1
-            trainPct = .05;
-            valPct = .05;
+            trainPct = .15;
+            num = 2;
+        case 2
+            trainPct = .04;
+            valPct = .01;
     end
     
     testPct = 1-valPct-trainPct;
     fclose('all');
 end
-
