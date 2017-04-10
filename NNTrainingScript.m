@@ -36,7 +36,7 @@ fclose('all');
 DispHistogram(targets, 50, 'Histogram of all sin(x) values', 'Value', 'Occurence');
 
 %Normalized data
-normalTars= (targets-mean(targets))/std(targets);
+normalTars= (targets-mean(inputs))/std(inputs);
 %disp('Normalized Targets');
 
 %normalIns= {(inputs{1}-mean(inputs{1}))/std(inputs{1}); (inputs{2}-mean(inputs{2}))/std(inputs{2})};
@@ -57,46 +57,44 @@ for j=0:3
         network = netParams(trainPct, testPct, valPct, numInputs, 10);
 
         %Hides the NNtraintool window for "faster" training
-        network.trainParam.showWindow = false;
+        %network.trainParam.showWindow = false;
 
         %Training the network with those set parameters
         [network, tr] = train(network, normalIns, normalTars);
-
+        
         outputs = network(normalIns);
-        testOutputs = outputs(tr.testInd);
+        %De-normalization of data
+        outputs = (outputs*std(inputs)+mean(inputs));
         %Adding exception for the full fit
         if (num == 0)
             PredOutputs = [PredOutputs, outputs];
         else
-            PredOutputs = [PredOutputs, testOutputs];
+            PredOutputs = [PredOutputs, outputs(tr.testInd)];
         end
-        testedTargets = normalTars(tr.testInd);
         %allTestTargets = [allTestTargets, testedTargets];
         %{
-        %De-normalization of data
-        outputs = (outputs*std(inputs)+mean(inputs));
         testOutputs = (testOutputs*std(inputs)+mean(inputs));
         testedTargets = (testedTargets*std(inputs)+mean(inputs));
         PredOutputs = (PredOutputs*std(inputs)+mean(inputs));
         %}
-        errors = outputs-normalTars;
-        %errors = outputs-targets;
+        %errors = outputs-normalTars;
+        errors = outputs-targets;
         RMSE = sqrt(mean((errors).^2));
 
         if (RMSE<minRMSE)
             minRMSE=RMSE;
-            minRMSEPred = testOutputs;
-            minRMSETargets = testedTargets;
+            minRMSEPred = outputs(tr.testInd);
+            minRMSETargets = targets(tr.testInd);
             minRMSETO = outputs(tr.trainInd);
-            minRMSETT = normalTars(tr.trainInd);
+            minRMSETT = targets(tr.trainInd);
         end
 
         if (RMSE>maxRMSE)
             maxRMSE=RMSE;
-            maxRMSEPred = testOutputs;
-            maxRMSETargets = testedTargets;
+            maxRMSEPred = outputs(tr.testInd);
+            maxRMSETargets = targets(tr.testInd);
             maxRMSETO = outputs(tr.trainInd);
-            maxRMSETT = normalTars(tr.trainInd);
+            maxRMSETT = targets(tr.trainInd);
         end
 
         allRMSE(i+1) = RMSE;
