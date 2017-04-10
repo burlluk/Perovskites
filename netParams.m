@@ -10,6 +10,9 @@ function [net] = netParams(trainPct, testPct, valPct, numInputs, nodes)
     net = fitnet(nodes);
     %setting number of inputs
     net.numInputs = numInputs;
+    if (numInputs == 2)
+        net.inputConnect = [1 1; 0 0];
+    end
     %setting training data percentage to 20%
     net.divideParam.trainRatio = trainPct;
     %Validation percentage is 10%
