@@ -72,10 +72,10 @@ for j=0:3
         outputs = (outputs*std(inputs)+mean(inputs));
         testOutputs = (testOutputs*std(inputs)+mean(inputs));
         testedTargets = (testedTargets*std(inputs)+mean(inputs));
-        allOutputs = (allOutputs*std(inputs)+mean(inputs));
+        PredOutputs = (PredOutputs*std(inputs)+mean(inputs));
         %}
         errors = outputs-normalTars;
-
+        %errors = outputs-targets;
         RMSE = sqrt(mean((errors).^2));
 
         if (RMSE<minRMSE)
