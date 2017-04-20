@@ -41,7 +41,7 @@ normalTars= (targets-mean(targets))/std(targets);
 normalIns= {(inputs{1}-mean(targets))/std(targets); (inputs{2}-mean(targets))/std(targets)};
 %disp('Normalized Inputs');
 
-for j=0:3
+for j=0:4
     minRMSE = 1;
     maxRMSE = 0;
     RMSESum = 0;
@@ -143,17 +143,20 @@ for j=0:3
     
     switch (num)
         case 0
-            trainPct = .75;
+            testPct = (1)/length(inputs{1});
             valPct = .05;
             num = 1;
         case 1
-            trainPct = .15;
+            testPct = .20;
             num = 2;
         case 2
-            trainPct = .04;
+            testPct = .80;
+            num = 3;
+        case 3
+            testPct = .95;
             valPct = .01;
     end
     
-    testPct = 1-valPct-trainPct;
+    trainPct = 1-valPct-testPct;
     fclose('all');
 end

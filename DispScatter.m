@@ -12,7 +12,7 @@ function [] = DispScatter(xOValues, yOValues, xTValues, yTValues, gTitle, xAxisL
         %polyfit_str = ('y = ' num2str(a) ' *x + ' num2str(b));
         y_fit = polyval(coef_fit,xOValues);
         y = @(x) x+0;
-        fplot(y, [-1 1], '-g');
+        fplot(y, [-3 3], '-g');
         plot(xOValues, y_fit, '-k');
     hold  off;
     title(gTitle);
