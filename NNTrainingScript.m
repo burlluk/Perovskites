@@ -97,7 +97,7 @@ for j=0:4
     
     %Display which run this is
     fprintf(fileID, '%s\n\n', '--------------------------------------');
-    fprintf(fileID, '%s\n', sprintf('Data for training Percentage of %d%%:\n', trainPct*100));
+    fprintf(fileID, '%s\n', sprintf('Data for Testing Percentage of %d%%:\n', testPct*100));
     
     %Display Numerical Results
     %Mean RMSE
