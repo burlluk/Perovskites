@@ -28,7 +28,6 @@ fprintf(fileID, '%s\n', 'Mean of all sin(x): ', mean(targets));
 %Writes the R^2 value
 %mdl = fitlm(inputs, targets);
 %fprintf(fileID, '%s\n', 'Rsquared for sin(x): ', mdl.Rsquared.Adjusted);
-fprintf(fileID, '%s\n', 'Rsquared for sin(x): ', mdl.Rsquared.Ordinary);
 %Writes the Std Dev of sin(x)
 fprintf(fileID, '%s\n', 'Standard Deviation of all sin(x): ', std(targets));
 fclose('all');
