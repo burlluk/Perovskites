@@ -11,4 +11,3 @@ function [] = DispHistogram(values, numBins, gTitle, xAxisLabel, yAxisLabel)
     directory = pwd;
     saveas(gcf, [fullfile([directory, '\Figures'], gTitle), '.pdf']);
 end
-
