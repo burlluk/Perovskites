@@ -28,7 +28,6 @@ fprintf(fileID, '%s\n', 'Mean of all sin(x): ', mean(targets));
 %Writes the R^2 value
 %mdl = fitlm(inputs, targets);
 %fprintf(fileID, '%s\n', 'Rsquared for sin(x): ', mdl.Rsquared.Adjusted);
-fprintf(fileID, '%s\n', 'Rsquared for sin(x): ', mdl.Rsquared.Ordinary);
 %Writes the Std Dev of sin(x)
 fprintf(fileID, '%s\n', 'Standard Deviation of all sin(x): ', std(targets));
 fclose('all');
@@ -42,7 +41,7 @@ normalTars= (targets-mean(targets))/std(targets);
 normalIns= {(inputs{1}-mean(targets))/std(targets); (inputs{2}-mean(targets))/std(targets)};
 %disp('Normalized Inputs');
 
-for j=0:3
+for j=0:4
     minRMSE = 1;
     maxRMSE = 0;
     RMSESum = 0;
@@ -98,7 +97,7 @@ for j=0:3
     
     %Display which run this is
     fprintf(fileID, '%s\n\n', '--------------------------------------');
-    fprintf(fileID, '%s\n', sprintf('Data for training Percentage of %d%%:\n', trainPct*100));
+    fprintf(fileID, '%s\n', sprintf('Data for Testing Percentage of %d%%:\n', testPct*100));
     
     %Display Numerical Results
     %Mean RMSE
@@ -119,10 +118,10 @@ for j=0:3
     if (num ~= 0)
     %Smallest R^2
     mdl2 = fitlm(minRMSEPred, minRMSETargets);
-    fprintf(fileID, '%s\n', 'Smallest R^2: ', mdl2.Rsquared.Adjusted);
+    fprintf(fileID, '%s\n', 'Best R^2: ', mdl2.Rsquared.Adjusted);
     %Largest R^2
     mdl3 = fitlm(maxRMSEPred, maxRMSETargets);
-    fprintf(fileID, '%s\n', 'Largest R^2: ', mdl3.Rsquared.Adjusted);
+    fprintf(fileID, '%s\n', 'Worst R^2: ', mdl3.Rsquared.Adjusted);
     end
 
     %Mean of Predicted Outputs
@@ -144,17 +143,20 @@ for j=0:3
     
     switch (num)
         case 0
-            trainPct = .75;
+            testPct = (1)/length(inputs{1});
             valPct = .05;
             num = 1;
         case 1
-            trainPct = .15;
+            testPct = .20;
             num = 2;
         case 2
-            trainPct = .04;
+            testPct = .80;
+            num = 3;
+        case 3
+            testPct = .95;
             valPct = .01;
     end
     
-    testPct = 1-valPct-trainPct;
+    trainPct = 1-valPct-testPct;
     fclose('all');
 end
