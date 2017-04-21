@@ -118,10 +118,10 @@ for j=0:4
     if (num ~= 0)
     %Smallest R^2
     mdl2 = fitlm(minRMSEPred, minRMSETargets);
-    fprintf(fileID, '%s\n', 'Smallest R^2: ', mdl2.Rsquared.Adjusted);
+    fprintf(fileID, '%s\n', 'Best R^2: ', mdl2.Rsquared.Adjusted);
     %Largest R^2
     mdl3 = fitlm(maxRMSEPred, maxRMSETargets);
-    fprintf(fileID, '%s\n', 'Largest R^2: ', mdl3.Rsquared.Adjusted);
+    fprintf(fileID, '%s\n', 'Worst R^2: ', mdl3.Rsquared.Adjusted);
     end
 
     %Mean of Predicted Outputs
