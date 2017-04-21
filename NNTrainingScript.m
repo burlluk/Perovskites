@@ -119,9 +119,13 @@ for j=0:4
     %Smallest R^2
     mdl2 = fitlm(minRMSEPred, minRMSETargets);
     fprintf(fileID, '%s\n', 'Best R^2: ', mdl2.Rsquared.Adjusted);
+    mdl2.Residuals.Raw;
+    saveas(plotResiduals(mdl2), [fullfile([directory, '\Figures'], sprintf('Residuals for Percentage of %d%:', testPct*100)), '.pdf']);
     %Largest R^2
     mdl3 = fitlm(maxRMSEPred, maxRMSETargets);
     fprintf(fileID, '%s\n', 'Worst R^2: ', mdl3.Rsquared.Adjusted);
+    mdl3.Residuals.Raw;
+    saveas(plotResiduals(mdl3), [fullfile([directory, '\Figures'], sprintf('Residuals for Percentage of %d%:', testPct*100)), '.pdf']);
     end
 
     %Mean of Predicted Outputs
